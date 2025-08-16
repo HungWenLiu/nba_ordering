@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NBA 球員卡訂購頁</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- 引入 UNICONS 圖標庫 -->
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+
+    <!-- 引入 Swiper CSS，用於滑動效果 -->
+    <link rel="stylesheet" href="../../packages/css/swiper-bundle.min.css">
+
+    <!-- 引入主要樣式檔案 -->
+    <link rel="stylesheet" href="../../packages/css/styles.css">
+
+    <!-- 引入圖表 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <style>
+        /*增加產品被選擇時的明顯狀態*/
+        .prod-card.selectd {
+            border-color: crimson;
+            background-color: rgba(163, 163, 163, 0.85);
+        }
+
+        .prod-card {
+            width: 18rem;
+            margin: 0 auto;
+        }
+
+        .prod-card .card-img-top {
+            height: 250px;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<header class="header" id="header">
+    <nav class="nav container d-flex align-items-center justify-content-between">
+        <a href="../../index.html" class="nav__logo">Kevin Liu</a>
+        <div class="nav__menu d-flex align-items-center" id="nav-menu">
+            <ul class="nav__list grid mb-0">
+                <li class="nav__item">
+                    <a href="nba.html" class="nav__link">
+                        <i class="uil uil-file-alt nav__icon"></i>作品集
+                    </a>
+                </li>
+            </ul>
+            <!-- 關閉按鈕 -->
+            <i class="uil uil-times nav__close ms-3" id="nav-close"></i>
+        </div>
+        <!-- 主題切換 -->
+        <div class="nav__btns d-flex align-items-center ms-3" style="margin-right: 30px;">
+            <i class="uil uil-moon change-theme" id="theme-button"></i>
+            <div class="nav__toggle ms-2" id="nav-toggle">
+                <i class="uil uil-apps"></i>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<body>
+    <form id="orderform" class="needs-validation" novalidate>
+        <!--產品資訊區塊及頁面標題-->
+        <section class="container mt-4">
+            <h1 class="text-center">NBA 球員卡訂購頁</h1>
+
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                <strong>提醒：</strong> 請確認以下欄位是否正確。
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="關閉"></button>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h4>選擇產品</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row justify-content-center">
+                        <!-- 產品1 -->
+                        <div class="col-12 col-md-4 d-flex justify-content-center mb-4">
+                            <div class="card prod-card border border-dark"
+                                onclick="selectProduct(this, 'product1', 1100 )">
+                                <img class="card-img-top" src="assets/curry.jpg" alt="Stephen Curry">
+                                <div class="card-body">
+                                    <!--產品標題-->
+                                    <div class="d-flex justify-content-between align-items-center mt-1 mb-2">
+                                        <h5 class="prod_title">Stephen Curry</h5>
+                                        <span class="badge bg-danger">熱門</span>
+                                    </div>
+                                    <p class="card-text">NBA 球員卡</p>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span>NT 1100</span>
+                                        <div class="form-check">
+                                            <input type="radio" class="form-check-input" id="product1" name="product"
+                                                value="Stephen Curry">
+                                            <label for="product1" class="form-check-label">選擇</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 產品2 -->
+                        <div class="col-12 col-md-4 d-flex justify-content-center mb-4">
+                            <div class="card prod-card border border-dark"
+                                onclick="selectProduct(this, 'product2', 1000 )">
+                                <img class="card-img-top" src="assets/durant.jpg" alt="Kevin Durant">
+                                <div class="card-body">
+
+                                    <!--產品標題-->
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h5 class="prod_title">Kevin Durant</h5>
+                                        <span class="badge bg-success">熱門</span>
+                                    </div>
+                                    <p class="card-text">NBA 球員卡</p>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span>NT 1000</span>
+                                        <div class="form-check">
+                                            <input type="radio" class="form-check-input" id="product2" name="product"
+                                                value="Kevin Durant">
+                                            <label for="product2" class="form-check-label">選擇</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 產品3 -->
+                        <div class="col-12 col-md-4 d-flex justify-content-center mb-4">
+                            <div class="card prod-card border border-dark"
+                                onclick="selectProduct(this, 'product3', 1200 )">
+                                <img class="card-img-top" src="assets/lebron.jpg" alt="LeBron James">
+                                <div class="card-body">
+                                    <!--產品標題-->
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h5 class="prod_title">LeBron James</h5>
+                                        <span class="badge bg-warning">熱門</span>
+                                    </div>
+                                    <p class="card-text">NBA 球員卡</p>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span>NT 1200</span>
+                                        <div class="form-check">
+                                            <input type="radio" class="form-check-input" id="product3" name="product"
+                                                value="LeBron James">
+                                            <label for="product3" class="form-check-label">選擇</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-check mt-1">
+                        <input type="checkbox" class="form-check-input" id="warranty">
+                        <label for="warranty" class="form-check-lable">添加延長保固服務(+NT $199)</label>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+        <!--消費者資訊-->
+        <section class="container mt-4">
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <div class="card">
+                        <div class="card-header">客戶資訊</div>
+                        <div class="card-body">
+                            <div class="cname-div">
+                                <label for="cname" class="form-check-label">購買人姓名</label>
+                                <input id="cname" name="canme" class="form-control" required>
+                                <div class="invalid-feedback">
+                                    請輸入您的姓名
+                                </div>
+                            </div>
+                            <div class="cemail-div mt-2">
+                                <label for="cemail" class="form-check-label">購買人電郵</label>
+                                <input id="cemail" name="cemail" class="form-control" required>
+                                <div class="invalid-feedback">
+                                    請輸入您的email
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6">
+                    <div class="card">
+                        <div class="card-header">配送資訊</div>
+                        <div class="card-body">
+                            <div class="city-div">
+                                <!-- 縣市 -->
+                                <label for="ccity" class="form-check-label">縣市</label>
+                                <select class="form-select" id="ccity" name="ccity" required>
+                                    <option value="">---請選擇---</option>
+                                    <option value="台北市">台北市</option>
+                                    <option value="新北市">新北市</option>
+                                    <option value="桃園市">桃園市</option>
+                                    <option value="台中市">台中市</option>
+                                </select>
+                                <div class="invalid-feedback">
+                                    請輸入您的縣市
+                                </div>
+                            </div>
+                            <div class="district-div mt-2">
+                                <!-- 行政區域 -->
+                                <label for="cdistrict" class="form-check-label">行政區域</label>
+                                <input id="cdistrict" name="cdistrict" class="form-control" required>
+                                <div class="invalid-feedback">
+                                    請輸入您的行政區域
+                                </div>
+                            </div>
+                            <div class="caddr-div mt-2">
+                                <!-- 地址 -->
+                                <label for="caddr" class="form-check-label">地址</label>
+                                <input id="caddr" name="caddr" class="form-control" required>
+                                <div class="invalid-feedback">
+                                    請輸入您的地址
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!--付款方式-->
+        <section class="container mt-4">
+            <div class="card">
+                <div class="card-header">支付方式</div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            <!--信用卡支付工具-->
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="paymentMethod" id="creditcard"
+                                    value="creditcard" required>
+                                <label class="form-check-label" for="creditcard">信用卡/Debit卡</label>
+                            </div>
+                            <!-- 卡號 -->
+                            <div class="cardnumber-info">
+                                <label>卡號</label>
+                                <input type="text" class="form-control" id="cardNumber" name="cardNumber"
+                                    placeholder="xxxx xxxx xxxx xxxx" required>
+                                <div class="invalid-feedback">
+                                    請輸入您的卡號
+                                </div>
+                            </div>
+                            <!-- 到期月/年 -->
+                            <div class="card-info mt-4">
+                                <div class="row">
+                                    <div class="col-12 col-md-6">
+                                        <label for="exDate" class="form-label">到期月/年</label>
+                                        <input type="text" class="form-control" id="exDate" name="exDate"
+                                            placeholder="MM/YY" required>
+                                        <div class="invalid-feedback">
+                                            請輸入您的到期月/年
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <label for="cvv" class="form-label">cvv</label>
+                                        <input class="form-control" type="text" id="cvv" name="cvv" required>
+                                        <div class="invalid-feedback">
+                                            請輸入您的cvv
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <!--其他支付工具-->
+                            <div class="mt-4">
+                                <input type="radio" id="linepay" name="paymentMethod" value="linepay">
+                                <label for="linepay" class="form-check-label">LinePay</label>
+                            </div>
+                            <div class="mt-4">
+                                <input type="radio" id="atm" name="paymentMethod" value="atm">
+                                <label for="atm" class="form-check-label">ATM</label>
+                            </div>
+                            <div class="mt-4">
+                                <input type="radio" id="cod" name="paymentMethod" value="cod">
+                                <label for="cod" class="form-check-label">貨到付款(+NT$30)</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="invalid-feedback">
+                        請輸入您的支付方式
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!--訂單明細-->
+        <section class="container mt-4">
+            <div class="card">
+                <div class="card-header">訂單摘要</div>
+                <div class="card-body">
+                    <div class="order-summary">
+                        <div class="row mt-2">
+                            <div class="col-7">產品</div>
+                            <div class="col-5 text-end" id="productName">xyz</div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-7">價格</div>
+                            <div class="col-5 text-end" id="productPrice">NT$0</div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-7">延長保固費用</div>
+                            <div class="col-5 text-end" id="warrantyPrice">NT$0</div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-7">運費</div>
+                            <div class="col-5 text-end" id="shippingPrice">NT$0</div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-7">付款手續費</div>
+                            <div class="col-5 text-end">NT$0</div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-7">總計</div>
+                            <div class="col-5 text-end" id="totalPrice">NT$0</div>
+                        </div>
+                    </div>
+                    <div class="form-check mt-2">
+                        <input type="checkbox" class="form-check-input" id="term" name="term" required>
+                        <label for="term" class="form-check-label">
+                            我已閱讀且同意<a href="javascript:;">服務條款</a>及<a href="javascript:;">隱私政策</a>
+                        </label>
+                        <div class="invalid-feedback">您必須同意才能進行結帳.</div>
+                    </div>
+                    <div class="mt-2 d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">結帳</button>
+                    </div>
+                </div>
+
+            </div>
+            </div>
+        </section>
+
+    </form>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        //全域變數
+        let selectedProductPrice = 0;
+
+        function selectProduct(cardEl, pid, price) {
+            // 先還原每個產品卡片的選取狀態
+            document.querySelectorAll('.prod-card').forEach(card => {
+                card.classList.remove('selectd', 'border-success');
+                card.classList.add('border-dark');
+            });
+            // 被選到的卡片加上綠色邊框
+            cardEl.classList.add("selectd", "border-success");
+            cardEl.classList.remove("border-dark");
+            document.getElementById(pid).checked = true;
+            document.getElementById("productName").textContent = document.getElementById(pid).value;
+            document.getElementById("productPrice").textContent = `NTD$${price}`;
+            selectedProductPrice = price;
+            updateTotal();
+        }
+        //計算總金額
+        function updateTotal() {
+            let warranty = document.getElementById("warranty").checked; // 取得保固勾選狀態
+            let warrantyPrice = warranty ? 199 : 0; // 保固金額
+
+            let payment_fee = 0;
+            let paymentMethod = document.querySelector("input[name=paymentMethod]:checked");
+            if (paymentMethod) {
+                if (paymentMethod.value == 'cod') {
+                    payment_fee = 30;
+                } else if (paymentMethod.value == 'atm') {
+                    payment_fee = 20;
+                }
+            }
+
+            document.getElementById("warrantyPrice").textContent = `NT$${warrantyPrice}`;
+            document.getElementById("shippingPrice").textContent = `NT$${payment_fee}`;
+
+            let totalPrice = selectedProductPrice + warrantyPrice + payment_fee;
+            document.getElementById("totalPrice").textContent = `NT$${totalPrice}`;
+        }
+
+        document.querySelectorAll("input[name=paymentMethod]:checked").forEach(obj => {
+            obj.addEventListener("change", updateTotal);
+        })
+        document.getElementById("warranty").addEventListener("change", updateTotal);
+        // Example starter JavaScript for disabling form submissions if there are invalid fields
+        (function () {
+            'use strict'
+
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.querySelectorAll('.needs-validation')
+
+            // Loop over them and prevent submission
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            //如果表單透過html5原生驗証失敗的情況下
+                            event.preventDefault();
+                            event.stopPropagation();
+                        } else {
+                            //如果表單透過html5原生驗証成功的情況下
+                            event.preventDefault();
+                        }
+
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+    </script>
+    <!-- 引入 Swiper JS，用於滑動效果 -->
+    <script src="../../packages/js/swiper-bundle.min.js"></script>
+
+    <!-- 引入主程式 JS -->
+    <script src="../../packages/js/main.js"></script>
+</body>
+
+</html>
