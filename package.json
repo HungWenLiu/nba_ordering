@@ -1,0 +1,26 @@
+{
+  "name": "nba-player-ordering",
+  "version": "1.0.0",
+  "description": "NBA球員卡訂購系統 - 綠界金流串接",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "body-parser": "^1.20.2",
+    "crypto": "^1.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "keywords": [
+    "nba",
+    "ordering",
+    "ecpay",
+    "payment"
+  ],
+  "author": "Kevin",
+  "license": "MIT"
+}
