@@ -1,0 +1,42 @@
+[
+    {
+        "id": 1,
+        "name": "LeBron James",
+        "team": "Los Angeles Lakers",
+        "position": "Forward",
+        "image": "assets/lebron.jpg",
+        "price": 1200
+    },
+    {
+        "id": 2,
+        "name": "Stephen Curry",
+        "team": "Golden State Warriors",
+        "position": "Guard",
+        "image": "assets/curry.jpg",
+        "price": 1100
+    },
+    {
+        "id": 3,
+        "name": "Kevin Durant",
+        "team": "Brooklyn Nets",
+        "position": "Forward",
+        "image": "assets/durant.jpg",
+        "price": 1000
+    },
+    {
+        "id": 4,
+        "name": "Giannis Antetokounmpo",
+        "team": "Milwaukee Bucks",
+        "position": "Forward",
+        "image": "assets/images/giannis.jpg",
+        "price": 799
+    },
+    {
+        "id": 5,
+        "name": "Kawhi Leonard",
+        "team": "Los Angeles Clippers",
+        "position": "Forward",
+        "image": "assets/images/kawhi.jpg",
+        "price": 749
+    }
+]
