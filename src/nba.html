@@ -350,10 +350,64 @@
             document.getElementById("totalPrice").textContent = `NT$${totalPrice}`;
         }
 
-        document.querySelectorAll("input[name=paymentMethod]:checked").forEach(obj => {
+        document.querySelectorAll("input[name=paymentMethod]").forEach(obj => {
             obj.addEventListener("change", updateTotal);
         })
         document.getElementById("warranty").addEventListener("change", updateTotal);
+        
+        // 綠界金流提交處理
+        function submitToEcpay() {
+            const form = document.getElementById('orderform');
+            const formData = new FormData(form);
+            
+            // 取得所選產品資訊
+            const selectedProduct = document.querySelector("input[name=product]:checked");
+            if (!selectedProduct) {
+                alert('請選擇產品');
+                return false;
+            }
+            
+            // 取得付款方式
+            const paymentMethod = document.querySelector("input[name=paymentMethod]:checked");
+            if (!paymentMethod) {
+                alert('請選擇付款方式');
+                return false;
+            }
+            
+            // 準備送到後端的資料
+            const orderData = {
+                productName: selectedProduct.value,
+                productPrice: selectedProductPrice,
+                warranty: document.getElementById("warranty").checked,
+                customerName: document.getElementById("cname").value,
+                customerEmail: document.getElementById("cemail").value,
+                city: document.getElementById("ccity").value,
+                district: document.getElementById("cdistrict").value,
+                address: document.getElementById("caddr").value,
+                paymentMethod: paymentMethod.value
+            };
+            
+            // 送到後端建立綠界訂單
+            fetch('/create-order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(orderData)
+            })
+            .then(response => response.text())
+            .then(html => {
+                // 將綠界的表單插入頁面並自動提交
+                document.body.innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('訂單建立失敗，請稍後再試');
+            });
+            
+            return false;
+        }
+
         // Example starter JavaScript for disabling form submissions if there are invalid fields
         (function () {
             'use strict'
@@ -365,13 +419,15 @@
             Array.prototype.slice.call(forms)
                 .forEach(function (form) {
                     form.addEventListener('submit', function (event) {
+                        event.preventDefault(); // 阻止預設提交
+                        
                         if (!form.checkValidity()) {
                             //如果表單透過html5原生驗証失敗的情況下
-                            event.preventDefault();
                             event.stopPropagation();
                         } else {
                             //如果表單透過html5原生驗証成功的情況下
-                            event.preventDefault();
+                            // 呼叫綠界金流提交函數
+                            submitToEcpay();
                         }
 
                         form.classList.add('was-validated')
