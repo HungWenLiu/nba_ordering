@@ -6,9 +6,9 @@ const ECPAY_CONFIG = {
     HashKey: '5294y06JbISpM5x9', // 測試金鑰
     HashIV: 'v77hoKGq4kWxNNIS', // 測試向量
     BaseURL: 'https://payment-stage.ecpay.com.tw', // 測試環境網址
-    ReturnURL: process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}/api/ecpay-return` : 'https://your-domain.vercel.app/api/ecpay-return',
-    ClientBackURL: process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}/payment-result.html` : 'https://your-domain.vercel.app/payment-result.html',
-    OrderResultURL: process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}/api/ecpay-order-result` : 'https://your-domain.vercel.app/api/ecpay-order-result'
+    ReturnURL: process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}/api/ecpay-return` : 'https://nbaordering-hoyi0ic1c-kevins-projects-40d4751e.vercel.app/api/ecpay-return',
+    ClientBackURL: process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}/payment-result.html` : 'https://nbaordering-hoyi0ic1c-kevins-projects-40d4751e.vercel.app/payment-result.html',
+    OrderResultURL: process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}/api/ecpay-order-result` : 'https://nbaordering-hoyi0ic1c-kevins-projects-40d4751e.vercel.app/api/ecpay-order-result'
 };
 
 // 生成檢查碼
