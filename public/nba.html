@@ -392,14 +392,32 @@
                 },
                 body: JSON.stringify(orderData)
             })
-            .then(response => response.text())
+            .then(response => {
+                // 檢查回應狀態
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                // 檢查 Content-Type 來判斷是 HTML 還是 JSON
+                const contentType = response.headers.get('content-type');
+                
+                if (contentType && contentType.includes('application/json')) {
+                    // 如果是 JSON，表示有錯誤
+                    return response.json().then(data => {
+                        throw new Error(data.error || '訂單建立失敗');
+                    });
+                } else {
+                    // 如果是 HTML，正常處理
+                    return response.text();
+                }
+            })
             .then(html => {
                 // 將綠界的表單插入頁面並自動提交
                 document.body.innerHTML = html;
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('訂單建立失敗，請稍後再試');
+                alert('訂單建立失敗：' + error.message);
             });
             
             return false;

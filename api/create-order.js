@@ -108,12 +108,7 @@ export default function handler(req, res) {
             OrderResultURL: ECPAY_CONFIG.OrderResultURL,
             NeedExtraPaidInfo: 'N',
             ChoosePayment: getEcpayPaymentMethod(paymentMethod),
-            EncryptType: 1,
-            // 客戶資訊
-            CustomField1: customerName,
-            CustomField2: customerEmail,
-            CustomField3: `${city}${district}${address}`,
-            CustomField4: warranty ? 'Y' : 'N'
+            EncryptType: 1
         };
 
         // 根據付款方式設定額外參數
@@ -129,6 +124,18 @@ export default function handler(req, res) {
             ECPAY_CONFIG.HashKey, 
             ECPAY_CONFIG.HashIV
         );
+
+        // 記錄參數到控制台，方便除錯
+        console.log('綠界參數:', ecpayParams);
+        console.log('訂單資訊:', {
+            customerName,
+            customerEmail,
+            city,
+            district,
+            address,
+            totalAmount,
+            paymentMethod
+        });
 
         // 生成表單HTML
         let formHTML = `
