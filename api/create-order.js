@@ -7,7 +7,7 @@ const ECPAY_CONFIG = {
     HashIV: 'v77hoKGq4kWxNNIS', // 測試向量
     BaseURL: 'https://payment-stage.ecpay.com.tw', // 測試環境網址
     ReturnURL: process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}/api/ecpay-return` : 'https://nbaordering-hoyi0ic1c-kevins-projects-40d4751e.vercel.app/api/ecpay-return',
-    ClientBackURL: process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}/payment-result.html?success=true` : 'https://nbaordering-hoyi0ic1c-kevins-projects-40d4751e.vercel.app/payment-result.html?success=true',
+    ClientBackURL: process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}/payment-result.html` : 'https://nbaordering-hoyi0ic1c-kevins-projects-40d4751e.vercel.app/payment-result.html',
     OrderResultURL: process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}/api/ecpay-order-result` : 'https://nbaordering-hoyi0ic1c-kevins-projects-40d4751e.vercel.app/api/ecpay-order-result'
 };
 
@@ -47,7 +47,7 @@ function getEcpayPaymentMethod(method) {
         case 'cod':
             return 'CVS'; // 超商代碼繳費
         case 'linepay':
-            return 'Credit'; // LINE Pay 歸類在信用卡
+            return 'Credit'; // LINE Pay 歸類在信用卡，但需要特殊處理
         default:
             return 'ALL';
     }
@@ -57,8 +57,9 @@ function getEcpayPaymentMethod(method) {
 function getPaymentExtraParams(method, ecpayParams) {
     switch(method) {
         case 'creditcard':
-            // 信用卡分期參數
-            ecpayParams.CreditInstallment = '3,6,12';
+            // 信用卡參數
+            ecpayParams.CreditInstallment = '3,6,12'; // 支援分期
+            ecpayParams.DeviceSource = 'P'; // 桌面版
             break;
         case 'atm':
             // ATM 轉帳參數
@@ -70,8 +71,11 @@ function getPaymentExtraParams(method, ecpayParams) {
             ecpayParams.StoreExpireDate = 10080; // 7天有效期(分鐘)
             break;
         case 'linepay':
-            // LINE Pay 參數
+            // LINE Pay 特殊設定
             ecpayParams.CreditInstallment = ''; // LINE Pay 不支援分期
+            ecpayParams.DeviceSource = 'P'; // 桌面版
+            // LINE Pay 需要特殊的 ChooseSubPayment 參數
+            ecpayParams.ChooseSubPayment = 'LinePay';
             break;
     }
     return ecpayParams;
@@ -94,7 +98,8 @@ export default function handler(req, res) {
             city,
             district,
             address,
-            paymentMethod
+            paymentMethod,
+            creditCard // 信用卡資訊（僅用於日誌記錄，不傳給綠界）
         } = req.body;
 
         // 驗證必要欄位
@@ -107,6 +112,17 @@ export default function handler(req, res) {
                 paymentMethod: !!paymentMethod
             });
             return res.status(400).json({ error: '缺少必要欄位' });
+        }
+
+        // 如果是信用卡付款，記錄相關資訊（但不記錄敏感資料）
+        if (paymentMethod === 'creditcard' && creditCard) {
+            console.log('信用卡付款資訊已收到:', {
+                cardHolder: creditCard.cardHolder,
+                cardNumberMask: creditCard.cardNumber ? 
+                    '**** **** **** ' + creditCard.cardNumber.slice(-4) : 'N/A',
+                expiryDate: creditCard.expiryDate
+                // 注意：我們不記錄完整卡號和CVV以確保安全
+            });
         }
 
         // 計算總金額
@@ -142,12 +158,16 @@ export default function handler(req, res) {
             TradeDesc: `NBA球員卡-${productName}`,
             ItemName: `${productName}${warranty ? '+保固服務' : ''}`,
             ReturnURL: ECPAY_CONFIG.ReturnURL,
-            ClientBackURL: ECPAY_CONFIG.ClientBackURL,
             OrderResultURL: ECPAY_CONFIG.OrderResultURL,
             NeedExtraPaidInfo: 'N',
             ChoosePayment: getEcpayPaymentMethod(paymentMethod),
             EncryptType: 1
         };
+
+        // 對於信用卡和 LINE Pay 付款，設定 ClientBackURL
+        if (paymentMethod === 'creditcard' || paymentMethod === 'linepay') {
+            ecpayParams.ClientBackURL = ECPAY_CONFIG.ClientBackURL;
+        }
 
         // 根據付款方式設定額外參數
         ecpayParams = getPaymentExtraParams(paymentMethod, ecpayParams);
@@ -219,6 +239,14 @@ export default function handler(req, res) {
                 .btn:hover {
                     background-color: #0056b3;
                 }
+                .payment-info {
+                    text-align: left;
+                    margin: 20px 0;
+                    padding: 15px;
+                    background-color: #f8f9fa;
+                    border-radius: 5px;
+                    border-left: 4px solid #007bff;
+                }
             </style>
         </head>
         <body onload="document.forms[0].submit();">
@@ -229,12 +257,37 @@ export default function handler(req, res) {
             formHTML += `<input type="hidden" name="${key}" value="${ecpayParams[key]}">`;
         });
 
+        // 根據付款方式顯示不同的說明
+        let paymentDescription = '';
+        if (paymentMethod === 'creditcard') {
+            paymentDescription = `
+                <div class="payment-info">
+                    <h4>💳 信用卡付款</h4>
+                    <p>您將在綠界安全頁面輸入信用卡資訊完成付款</p>
+                    <small>• 支援 Visa、MasterCard、JCB<br>
+                    • 支援分期付款<br>
+                    • 所有交易均經過SSL加密保護</small>
+                </div>
+            `;
+        } else if (paymentMethod === 'linepay') {
+            paymentDescription = `
+                <div class="payment-info">
+                    <h4>💚 LINE Pay</h4>
+                    <p>您將被導向 LINE Pay 完成付款</p>
+                    <small>• 使用您的 LINE 帳號快速付款<br>
+                    • 支援各大銀行信用卡<br>
+                    • 安全便利的行動支付</small>
+                </div>
+            `;
+        }
+
         formHTML += `
             </form>
             <div class="loading-container">
                 <div class="spinner"></div>
                 <h3>正在跳轉到綠界金流...</h3>
                 <p>請稍候，系統正在為您處理付款...</p>
+                ${paymentDescription}
                 <button class="btn" onclick="document.forms[0].submit();">手動前往付款</button>
             </div>
         </body>
