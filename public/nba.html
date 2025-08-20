@@ -17,13 +17,22 @@
     <style>
         /*增加產品被選擇時的明顯狀態*/
         .prod-card.selectd {
-            border-color: crimson;
-            background-color: rgba(163, 163, 163, 0.85);
+            border-color: #28a745 !important;
+            border-width: 3px !important;
+            box-shadow: 0 0 10px rgba(40, 167, 69, 0.3);
+            transform: scale(1.02);
+            transition: all 0.3s ease;
         }
 
         .prod-card {
             width: 18rem;
             margin: 0 auto;
+            transition: all 0.3s ease;
+        }
+
+        .prod-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
 
         .prod-card .card-img-top {
