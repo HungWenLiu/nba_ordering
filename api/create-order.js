@@ -7,7 +7,7 @@ const ECPAY_CONFIG = {
     HashIV: 'v77hoKGq4kWxNNIS', // 測試向量
     BaseURL: 'https://payment-stage.ecpay.com.tw', // 測試環境網址
     ReturnURL: process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}/api/ecpay-return` : 'https://nbaordering-hoyi0ic1c-kevins-projects-40d4751e.vercel.app/api/ecpay-return',
-    ClientBackURL: process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}/payment-result.html` : 'https://nbaordering-hoyi0ic1c-kevins-projects-40d4751e.vercel.app/payment-result.html',
+    ClientBackURL: process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}/payment-result.html?success=true` : 'https://nbaordering-hoyi0ic1c-kevins-projects-40d4751e.vercel.app/payment-result.html?success=true',
     OrderResultURL: process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}/api/ecpay-order-result` : 'https://nbaordering-hoyi0ic1c-kevins-projects-40d4751e.vercel.app/api/ecpay-order-result'
 };
 
@@ -85,11 +85,20 @@ export default function handler(req, res) {
         // 生成訂單編號（時間戳 + 隨機數）
         const merchantTradeNo = 'NBA' + Date.now() + Math.floor(Math.random() * 1000);
         
+        // 生成正確的綠界時間格式
+        const now = new Date();
+        const merchantTradeDate = now.getFullYear() + '/' + 
+            String(now.getMonth() + 1).padStart(2, '0') + '/' + 
+            String(now.getDate()).padStart(2, '0') + ' ' + 
+            String(now.getHours()).padStart(2, '0') + ':' + 
+            String(now.getMinutes()).padStart(2, '0') + ':' + 
+            String(now.getSeconds()).padStart(2, '0');
+        
         // 綠界金流參數
         const ecpayParams = {
             MerchantID: ECPAY_CONFIG.MerchantID,
             MerchantTradeNo: merchantTradeNo,
-            MerchantTradeDate: new Date().toISOString().slice(0, 19).replace('T', ' ').replace(/-/g, '/'),
+            MerchantTradeDate: merchantTradeDate,
             PaymentType: 'aio',
             TotalAmount: totalAmount,
             TradeDesc: 'NBA球員卡購買',
@@ -99,7 +108,12 @@ export default function handler(req, res) {
             OrderResultURL: ECPAY_CONFIG.OrderResultURL,
             NeedExtraPaidInfo: 'N',
             ChoosePayment: getEcpayPaymentMethod(paymentMethod),
-            EncryptType: 1
+            EncryptType: 1,
+            // 客戶資訊
+            CustomField1: customerName,
+            CustomField2: customerEmail,
+            CustomField3: `${city}${district}${address}`,
+            CustomField4: warranty ? 'Y' : 'N'
         };
 
         // 根據付款方式設定額外參數

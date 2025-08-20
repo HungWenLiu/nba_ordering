@@ -50,22 +50,48 @@
         // 從 URL 參數獲取付款結果
         const urlParams = new URLSearchParams(window.location.search);
         
-        // 顯示訂單編號
+        // 檢查是否有成功參數或綠界回傳參數
+        const success = urlParams.get('success');
         const merchantTradeNo = urlParams.get('MerchantTradeNo');
+        const rtnCode = urlParams.get('RtnCode');
+        const rtnMsg = urlParams.get('RtnMsg');
+        
+        // 顯示訂單編號
         if (merchantTradeNo) {
             document.getElementById('orderNo').textContent = merchantTradeNo;
+        } else {
+            document.getElementById('orderNo').textContent = '處理中...';
         }
         
         // 顯示付款時間
         document.getElementById('paymentTime').textContent = new Date().toLocaleString('zh-TW');
         
-        // 如果付款失敗，顯示錯誤訊息
-        const rtnCode = urlParams.get('RtnCode');
-        if (rtnCode !== '1') {
+        // 判斷付款結果
+        let isSuccess = false;
+        
+        // 情況1：從 ClientBackURL 來的，有 success=true 參數
+        if (success === 'true') {
+            isSuccess = true;
+        }
+        // 情況2：從綠界直接回傳的，檢查 RtnCode
+        else if (rtnCode === '1') {
+            isSuccess = true;
+        }
+        // 情況3：明確的失敗回應
+        else if (rtnCode && rtnCode !== '1') {
+            isSuccess = false;
+        }
+        // 情況4：預設情況（直接訪問頁面）
+        else {
+            isSuccess = true; // 預設顯示成功
+        }
+        
+        // 如果付款失敗，更新頁面顯示
+        if (!isSuccess) {
             document.querySelector('.card-header').className = 'card-header bg-danger text-white text-center';
             document.querySelector('.card-header h3').textContent = '付款失敗';
             document.querySelector('.card-body h4').textContent = '付款處理失敗';
-            document.querySelector('.card-body p').innerHTML = '很抱歉，您的付款無法完成。<br>請重新嘗試或聯絡客服。';
+            document.querySelector('.card-body p').innerHTML = `很抱歉，您的付款無法完成。<br>錯誤訊息：${rtnMsg || '未知錯誤'}<br>請重新嘗試或聯絡客服。`;
             document.querySelector('.text-success').className = 'text-danger';
             document.querySelector('.text-success').textContent = '失敗';
         }
