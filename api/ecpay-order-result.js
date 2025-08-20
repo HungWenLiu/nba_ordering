@@ -1,8 +1,7 @@
 export default function handler(req, res) {
     if (req.method === 'GET') {
         return res.status(200).json({ message: 'ECPay order result API is working.' });
-    }
-    if (req.method === 'POST') {
+    } else if (req.method === 'POST') {
         try {
             console.log('訂單查詢結果:', req.body);
             res.status(200).send('1|OK');
