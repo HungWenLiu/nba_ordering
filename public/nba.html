@@ -30,6 +30,40 @@
             height: 250px;
             object-fit: cover;
         }
+        
+        /* 付款方式樣式 */
+        .payment-option {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .payment-option:hover {
+            border-color: #007bff;
+            background-color: #f8f9fa;
+        }
+        
+        .payment-option.selected {
+            border-color: #28a745;
+            background-color: #d4edda;
+        }
+        
+        .payment-check {
+            margin: 0;
+        }
+        
+        .payment-label {
+            width: 100%;
+            margin: 0;
+            cursor: pointer;
+            font-weight: normal;
+        }
+        
+        .form-check-input:checked ~ .payment-label {
+            color: #28a745;
+        }
     </style>
 </head>
 
@@ -198,56 +232,72 @@
                 <div class="card-header">支付方式</div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-12 col-md-6">
-                            <!--信用卡支付工具-->
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="paymentMethod" id="creditcard"
-                                    value="creditcard" required>
-                                <label class="form-check-label" for="creditcard">信用卡/Debit卡</label>
-                            </div>
-                            <!-- 卡號 -->
-                            <div class="cardnumber-info">
-                                <label>卡號</label>
-                                <input type="text" class="form-control" id="cardNumber" name="cardNumber"
-                                    placeholder="xxxx xxxx xxxx xxxx" required>
-                                <div class="invalid-feedback">
-                                    請輸入您的卡號
+                        <div class="col-12">
+                            <h5 class="mb-3">選擇付款方式</h5>
+                            
+                            <!-- 信用卡 -->
+                            <div class="payment-option mb-3">
+                                <div class="form-check payment-check">
+                                    <input class="form-check-input" type="radio" name="paymentMethod" id="creditcard"
+                                        value="creditcard" required>
+                                    <label class="form-check-label payment-label" for="creditcard">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <strong>💳 信用卡/Debit卡</strong>
+                                                <div class="text-muted small">支援 Visa、MasterCard、JCB</div>
+                                            </div>
+                                            <span class="text-success small">推薦</span>
+                                        </div>
+                                    </label>
                                 </div>
                             </div>
-                            <!-- 到期月/年 -->
-                            <div class="card-info mt-4">
-                                <div class="row">
-                                    <div class="col-12 col-md-6">
-                                        <label for="exDate" class="form-label">到期月/年</label>
-                                        <input type="text" class="form-control" id="exDate" name="exDate"
-                                            placeholder="MM/YY" required>
-                                        <div class="invalid-feedback">
-                                            請輸入您的到期月/年
+                            
+                            <!-- LINE Pay -->
+                            <div class="payment-option mb-3">
+                                <div class="form-check payment-check">
+                                    <input class="form-check-input" type="radio" name="paymentMethod" id="linepay" value="linepay">
+                                    <label class="form-check-label payment-label" for="linepay">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <strong>💚 LINE Pay</strong>
+                                                <div class="text-muted small">使用 LINE Pay 快速付款</div>
+                                            </div>
+                                            <span class="text-primary small">便利</span>
                                         </div>
-                                    </div>
-                                    <div class="col-12 col-md-6">
-                                        <label for="cvv" class="form-label">cvv</label>
-                                        <input class="form-control" type="text" id="cvv" name="cvv" required>
-                                        <div class="invalid-feedback">
-                                            請輸入您的cvv
-                                        </div>
-                                    </div>
+                                    </label>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <!--其他支付工具-->
-                            <div class="mt-4">
-                                <input type="radio" id="linepay" name="paymentMethod" value="linepay">
-                                <label for="linepay" class="form-check-label">LinePay</label>
+                            
+                            <!-- ATM 轉帳 -->
+                            <div class="payment-option mb-3">
+                                <div class="form-check payment-check">
+                                    <input class="form-check-input" type="radio" name="paymentMethod" id="atm" value="atm">
+                                    <label class="form-check-label payment-label" for="atm">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <strong>🏧 ATM 轉帳</strong>
+                                                <div class="text-muted small">手續費 +NT$20，3天內完成轉帳</div>
+                                            </div>
+                                            <span class="text-info small">+$20</span>
+                                        </div>
+                                    </label>
+                                </div>
                             </div>
-                            <div class="mt-4">
-                                <input type="radio" id="atm" name="paymentMethod" value="atm">
-                                <label for="atm" class="form-check-label">ATM</label>
-                            </div>
-                            <div class="mt-4">
-                                <input type="radio" id="cod" name="paymentMethod" value="cod">
-                                <label for="cod" class="form-check-label">貨到付款(+NT$30)</label>
+                            
+                            <!-- 貨到付款 -->
+                            <div class="payment-option mb-3">
+                                <div class="form-check payment-check">
+                                    <input class="form-check-input" type="radio" name="paymentMethod" id="cod" value="cod">
+                                    <label class="form-check-label payment-label" for="cod">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <strong>📦 貨到付款</strong>
+                                                <div class="text-muted small">收到商品時現金付款</div>
+                                            </div>
+                                            <span class="text-warning small">+$30</span>
+                                        </div>
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -348,8 +398,32 @@
         }
 
         document.querySelectorAll("input[name=paymentMethod]").forEach(obj => {
-            obj.addEventListener("change", updateTotal);
-        })
+            obj.addEventListener("change", function() {
+                // 更新總金額
+                updateTotal();
+                
+                // 更新視覺效果
+                document.querySelectorAll('.payment-option').forEach(option => {
+                    option.classList.remove('selected');
+                });
+                
+                if (this.checked) {
+                    this.closest('.payment-option').classList.add('selected');
+                }
+            });
+        });
+        
+        // 為付款選項添加點擊事件
+        document.querySelectorAll('.payment-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const radio = this.querySelector('input[type="radio"]');
+                if (radio) {
+                    radio.checked = true;
+                    radio.dispatchEvent(new Event('change'));
+                }
+            });
+        });
+        
         document.getElementById("warranty").addEventListener("change", updateTotal);
         
         // 綠界金流提交處理
@@ -383,6 +457,15 @@
                 address: document.getElementById("caddr").value,
                 paymentMethod: paymentMethod.value
             };
+            
+            // 除錯用：顯示即將發送的資料
+            console.log('準備發送的訂單資料:', orderData);
+            
+            // 驗證必要欄位
+            if (!orderData.productName || !orderData.productPrice || !orderData.customerName || !orderData.customerEmail) {
+                alert('請填寫所有必要欄位');
+                return false;
+            }
             
             // 送到後端建立綠界訂單
             fetch('/api/create-order', {
@@ -450,11 +533,6 @@
                 })
         })()
     </script>
-    <!-- 引入 Swiper JS，用於滑動效果 -->
-    <script src="../../packages/js/swiper-bundle.min.js"></script>
-
-    <!-- 引入主程式 JS -->
-    <script src="../../packages/js/main.js"></script>
 </body>
 
 </html>

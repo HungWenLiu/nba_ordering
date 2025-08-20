@@ -45,12 +45,36 @@ function getEcpayPaymentMethod(method) {
         case 'atm':
             return 'ATM';
         case 'cod':
-            return 'CVS'; // 超商代碼
+            return 'CVS'; // 超商代碼繳費
         case 'linepay':
-            return 'Credit'; // LINE Pay 通常歸類在信用卡
+            return 'Credit'; // LINE Pay 歸類在信用卡
         default:
             return 'ALL';
     }
+}
+
+// 取得付款方式的額外參數
+function getPaymentExtraParams(method, ecpayParams) {
+    switch(method) {
+        case 'creditcard':
+            // 信用卡分期參數
+            ecpayParams.CreditInstallment = '3,6,12';
+            break;
+        case 'atm':
+            // ATM 轉帳參數
+            ecpayParams.ExpireDate = 3; // 3天內完成轉帳
+            ecpayParams.PaymentInfoURL = ecpayParams.ReturnURL; // ATM 資訊通知
+            break;
+        case 'cod':
+            // 超商代碼繳費參數
+            ecpayParams.StoreExpireDate = 10080; // 7天有效期(分鐘)
+            break;
+        case 'linepay':
+            // LINE Pay 參數
+            ecpayParams.CreditInstallment = ''; // LINE Pay 不支援分期
+            break;
+    }
+    return ecpayParams;
 }
 
 export default function handler(req, res) {
@@ -59,6 +83,8 @@ export default function handler(req, res) {
     }
 
     try {
+        console.log('收到的請求體:', req.body);
+        
         const {
             productName,
             productPrice,
@@ -70,6 +96,18 @@ export default function handler(req, res) {
             address,
             paymentMethod
         } = req.body;
+
+        // 驗證必要欄位
+        if (!productName || !productPrice || !customerName || !customerEmail || !paymentMethod) {
+            console.log('缺少必要欄位:', {
+                productName: !!productName,
+                productPrice: !!productPrice,
+                customerName: !!customerName,
+                customerEmail: !!customerEmail,
+                paymentMethod: !!paymentMethod
+            });
+            return res.status(400).json({ error: '缺少必要欄位' });
+        }
 
         // 計算總金額
         let totalAmount = parseInt(productPrice);
@@ -95,14 +133,14 @@ export default function handler(req, res) {
             String(now.getSeconds()).padStart(2, '0');
         
         // 綠界金流參數
-        const ecpayParams = {
+        let ecpayParams = {
             MerchantID: ECPAY_CONFIG.MerchantID,
             MerchantTradeNo: merchantTradeNo,
             MerchantTradeDate: merchantTradeDate,
             PaymentType: 'aio',
             TotalAmount: totalAmount,
-            TradeDesc: 'NBA球員卡購買',
-            ItemName: productName,
+            TradeDesc: `NBA球員卡-${productName}`,
+            ItemName: `${productName}${warranty ? '+保固服務' : ''}`,
             ReturnURL: ECPAY_CONFIG.ReturnURL,
             ClientBackURL: ECPAY_CONFIG.ClientBackURL,
             OrderResultURL: ECPAY_CONFIG.OrderResultURL,
@@ -112,11 +150,7 @@ export default function handler(req, res) {
         };
 
         // 根據付款方式設定額外參數
-        if (paymentMethod === 'creditcard') {
-            ecpayParams.CreditInstallment = '3,6,12';
-        } else if (paymentMethod === 'atm') {
-            ecpayParams.ExpireDate = 3; // ATM 繳費期限（天）
-        }
+        ecpayParams = getPaymentExtraParams(paymentMethod, ecpayParams);
 
         // 生成檢查碼
         ecpayParams.CheckMacValue = generateCheckMacValue(

@@ -53,7 +53,18 @@ export default function handler(req, res) {
 
         if (receivedCheckMacValue === calculatedCheckMacValue) {
             console.log('付款結果驗證成功');
+            console.log('訂單詳細資訊:', {
+                訂單編號: req.body.MerchantTradeNo,
+                付款金額: req.body.TradeAmt,
+                付款時間: req.body.PaymentDate,
+                付款方式: req.body.PaymentType,
+                商品名稱: req.body.ItemName,
+                交易狀態: req.body.RtnCode === '1' ? '成功' : '失敗'
+            });
+            
             // 這裡可以更新資料庫訂單狀態
+            // 例如：updateOrderStatus(req.body.MerchantTradeNo, 'paid');
+            
             res.status(200).send('1|OK'); // 回應綠界成功
         } else {
             console.log('付款結果驗證失敗');
