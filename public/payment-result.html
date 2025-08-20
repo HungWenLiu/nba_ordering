@@ -50,17 +50,11 @@
         // 從 URL 參數獲取付款結果
         const urlParams = new URLSearchParams(window.location.search);
         
-        // 綠界會傳回的重要參數
+        // 檢查是否有成功參數或綠界回傳參數
+        const success = urlParams.get('success');
         const merchantTradeNo = urlParams.get('MerchantTradeNo');
         const rtnCode = urlParams.get('RtnCode');
         const rtnMsg = urlParams.get('RtnMsg');
-        const tradeNo = urlParams.get('TradeNo');
-        const tradeAmt = urlParams.get('TradeAmt');
-        const paymentDate = urlParams.get('PaymentDate');
-        const paymentType = urlParams.get('PaymentType');
-        const paymentTypeChargeFee = urlParams.get('PaymentTypeChargeFee');
-        const tradeDate = urlParams.get('TradeDate');
-        const simulatePaid = urlParams.get('SimulatePaid'); // 測試環境模擬付款
         
         // 顯示訂單編號
         if (merchantTradeNo) {
@@ -70,40 +64,26 @@
         }
         
         // 顯示付款時間
-        if (paymentDate) {
-            document.getElementById('paymentTime').textContent = paymentDate;
-        } else if (tradeDate) {
-            document.getElementById('paymentTime').textContent = tradeDate;
-        } else {
-            document.getElementById('paymentTime').textContent = new Date().toLocaleString('zh-TW');
-        }
+        document.getElementById('paymentTime').textContent = new Date().toLocaleString('zh-TW');
         
         // 判斷付款結果
         let isSuccess = false;
         
-        console.log('URL參數:', {
-            merchantTradeNo,
-            rtnCode,
-            rtnMsg,
-            tradeNo,
-            tradeAmt,
-            paymentDate,
-            paymentType,
-            simulatePaid
-        });
-        
-        // 綠界成功的條件：
-        // 1. RtnCode = '1' (正式付款成功)
-        // 2. SimulatePaid = '1' (測試環境模擬付款成功)
-        if (rtnCode === '1' || simulatePaid === '1') {
+        // 情況1：從 ClientBackURL 來的，有 success=true 參數
+        if (success === 'true') {
             isSuccess = true;
-        } else if (rtnCode && rtnCode !== '1') {
-            // 明確的失敗回應
+        }
+        // 情況2：從綠界直接回傳的，檢查 RtnCode
+        else if (rtnCode === '1') {
+            isSuccess = true;
+        }
+        // 情況3：明確的失敗回應
+        else if (rtnCode && rtnCode !== '1') {
             isSuccess = false;
-        } else {
-            // 如果沒有相關參數，可能是直接訪問頁面或其他情況
-            // 預設顯示成功（但這種情況較少見）
-            isSuccess = true;
+        }
+        // 情況4：預設情況（直接訪問頁面）
+        else {
+            isSuccess = true; // 預設顯示成功
         }
         
         // 如果付款失敗，更新頁面顯示
@@ -112,40 +92,8 @@
             document.querySelector('.card-header h3').textContent = '付款失敗';
             document.querySelector('.card-body h4').textContent = '付款處理失敗';
             document.querySelector('.card-body p').innerHTML = `很抱歉，您的付款無法完成。<br>錯誤訊息：${rtnMsg || '未知錯誤'}<br>請重新嘗試或聯絡客服。`;
-            
-            // 更新付款狀態顯示
-            const statusElement = document.querySelector('.text-success');
-            if (statusElement) {
-                statusElement.className = 'text-danger';
-                statusElement.textContent = '失敗';
-            }
-        } else {
-            // 付款成功，顯示更詳細的資訊
-            console.log('付款成功！參數詳情:', {
-                訂單編號: merchantTradeNo,
-                綠界交易編號: tradeNo,
-                付款金額: tradeAmt,
-                付款時間: paymentDate || tradeDate,
-                付款方式: paymentType,
-                手續費: paymentTypeChargeFee
-            });
-            
-            // 可以在這裡添加更多成功後的處理
-            // 例如：發送成功通知到後端、更新用戶資訊等
-        }
-        
-        // 如果有交易金額，可以顯示在頁面上
-        if (tradeAmt) {
-            const amountInfo = document.createElement('li');
-            amountInfo.innerHTML = `<strong>付款金額：</strong> NT$ ${tradeAmt}`;
-            document.querySelector('.list-unstyled').appendChild(amountInfo);
-        }
-        
-        // 如果有付款方式，可以顯示在頁面上
-        if (paymentType) {
-            const paymentInfo = document.createElement('li');
-            paymentInfo.innerHTML = `<strong>付款方式：</strong> ${paymentType}`;
-            document.querySelector('.list-unstyled').appendChild(paymentInfo);
+            document.querySelector('.text-success').className = 'text-danger';
+            document.querySelector('.text-success').textContent = '失敗';
         }
     </script>
 </body>

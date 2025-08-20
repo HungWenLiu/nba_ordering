@@ -59,67 +59,15 @@ export default function handler(req, res) {
                 付款時間: req.body.PaymentDate,
                 付款方式: req.body.PaymentType,
                 商品名稱: req.body.ItemName,
-                交易狀態: req.body.RtnCode === '1' ? '成功' : '失敗',
-                綠界交易編號: req.body.TradeNo
+                交易狀態: req.body.RtnCode === '1' ? '成功' : '失敗'
             });
             
-            // 檢查是否為信用卡或 LINE Pay 付款
-            const paymentType = req.body.PaymentType;
-            const isCardPayment = paymentType && (paymentType.includes('Credit') || paymentType.includes('AndroidPay') || paymentType.includes('ApplePay'));
-            
-            // 如果是信用卡類付款且成功，重定向到成功頁面
-            if (isCardPayment && req.body.RtnCode === '1') {
-                const redirectUrl = process.env.VERCEL_URL ? 
-                    `https://${process.env.VERCEL_URL}/payment-result.html` : 
-                    'https://nbaordering-hoyi0ic1c-kevins-projects-40d4751e.vercel.app/payment-result.html';
-                
-                // 建構重定向 URL 帶上所有必要參數
-                const params = new URLSearchParams({
-                    MerchantTradeNo: req.body.MerchantTradeNo || '',
-                    RtnCode: req.body.RtnCode || '',
-                    RtnMsg: req.body.RtnMsg || '',
-                    TradeNo: req.body.TradeNo || '',
-                    TradeAmt: req.body.TradeAmt || '',
-                    PaymentDate: req.body.PaymentDate || '',
-                    PaymentType: req.body.PaymentType || '',
-                    SimulatePaid: req.body.SimulatePaid || '0'
-                });
-                
-                const fullRedirectUrl = `${redirectUrl}?${params.toString()}`;
-                console.log('重定向到:', fullRedirectUrl);
-                
-                // 對於信用卡付款，返回重定向頁面
-                res.setHeader('Content-Type', 'text/html; charset=utf-8');
-                res.status(200).send(`
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <meta charset="UTF-8">
-                        <title>付款完成</title>
-                        <script>
-                            window.location.href = "${fullRedirectUrl}";
-                        </script>
-                    </head>
-                    <body>
-                        <div style="text-align: center; padding: 50px;">
-                            <h2>付款完成，正在跳轉...</h2>
-                            <p>如果沒有自動跳轉，請<a href="${fullRedirectUrl}">點擊這裡</a></p>
-                        </div>
-                    </body>
-                    </html>
-                `);
-            } else {
-                // 對於其他付款方式或失敗情況，返回標準回應
-                res.status(200).send('1|OK');
-            }
-            
             // 這裡可以更新資料庫訂單狀態
-            // 例如：updateOrderStatus(req.body.MerchantTradeNo, req.body.RtnCode === '1' ? 'paid' : 'failed');
+            // 例如：updateOrderStatus(req.body.MerchantTradeNo, 'paid');
             
+            res.status(200).send('1|OK'); // 回應綠界成功
         } else {
             console.log('付款結果驗證失敗');
-            console.log('接收到的 CheckMacValue:', receivedCheckMacValue);
-            console.log('計算出的 CheckMacValue:', calculatedCheckMacValue);
             res.status(400).send('0|FAIL');
         }
     } catch (error) {

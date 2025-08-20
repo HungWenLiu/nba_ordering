@@ -8,15 +8,6 @@
     },
     "api/ecpay-order-result.js": {
       "maxDuration": 30
-    },
-    "api/payment-success.js": {
-      "maxDuration": 30
     }
-  },
-  "rewrites": [
-    {
-      "source": "/",
-      "destination": "/index.html"
-    }
-  ]
+  }
 }
